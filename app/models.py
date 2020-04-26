@@ -5,6 +5,7 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    #recipies = db.relationship('Recipe', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -13,8 +14,29 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     description = db.Column(db.String(128))
+    servings = db.Column(db.Integer)
     #user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    #steps = db.relationship('RecipeStep', backref='recipe', lazy='dynamic')
+    sections = db.relationship('RecipeSection', backref='sections', lazy='dynamic')
+    steps = db.relationship('RecipeStep', backref='steps', lazy='dynamic')
+    comments = db.Column(db.String(512))
+    source = db.Column(db.String(128))
+
+    def __repr__(self):
+        return f'{self.name}'
+
+class RecipeStep(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    step_number = db.Column(db.Integer)
+    step_text = db.Column(db.String(64))
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
+
+    def __repr__(self):
+        return f'{self.step_number}. {self.step_text}'
+
+class RecipeSection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), default='Default')
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
     ingredients = db.relationship('RecipeIngredient', backref='ingredients', lazy='dynamic')
 
     def __repr__(self):
@@ -25,7 +47,7 @@ class RecipeIngredient(db.Model):
     measurement_qty_id = db.Column(db.Integer, db.ForeignKey('measurement_qty.id'))
     measurement_unit_id = db.Column(db.Integer, db.ForeignKey('measurement_unit.id'))
     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredient.id'))
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'))
+    recipe_section_id = db.Column(db.Integer, db.ForeignKey('recipe_section.id'))
 
     def __repr__(self):
         return f'{self.quantity} {self.unit} {self.ingredient}'
