@@ -1,7 +1,7 @@
 from app import app, db
-from app.models import (User, Recipe, RecipeStep, RecipeSection, 
-                       RecipeIngredient, MeasurementQty, MeasurementUnit, 
-                       Ingredient, IngredientType)
+from app.models import (User, Recipe, RecipeStep, RecipeIngredient,
+                       MeasurementQty, MeasurementUnit, Ingredient, 
+                       IngredientType)
 
 @app.shell_context_processor
 def make_shell_context():
@@ -10,7 +10,6 @@ def make_shell_context():
         'User': User,
         'Recipe': Recipe,
         'RecipeStep': RecipeStep,
-        'RecipeSection': RecipeSection,
         'RecipeIngredient': RecipeIngredient,
         'MeasurementQty': MeasurementQty,
         'MeasurementUnit': MeasurementUnit, 
