@@ -31,6 +31,8 @@ Temporary Items
 venv/
 __pycache__/
 migrations/
+crap1
+crap2
 
 ### VsCode ###
 .vscode/
