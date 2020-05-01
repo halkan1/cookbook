@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import (User, Recipe, RecipeStep, RecipeIngredient,
+from app.models import (User, Recipe, Tag, RecipeStep, RecipeIngredient,
                        MeasurementQty, MeasurementUnit, Ingredient, 
                        IngredientType)
 
@@ -9,6 +9,7 @@ def make_shell_context():
         'db': db,
         'User': User,
         'Recipe': Recipe,
+        'Tag' : Tag,
         'RecipeStep': RecipeStep,
         'RecipeIngredient': RecipeIngredient,
         'MeasurementQty': MeasurementQty,
