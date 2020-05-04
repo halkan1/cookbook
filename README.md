@@ -9,6 +9,7 @@
 ## ToDos
 
 - [ ] Clean up current code.
+- [ ] Restructure functions in Forms and Models.
 - [ ] Implement ingredients and steps into recipe form.
 - [ ] Implement ingredient, measurement, quantity, tag, type views.
 - [ ] Investigate support for float values in quantity table.
@@ -20,3 +21,4 @@
 - [ ] Implement the use of Errors.
 - [ ] Improve HTML code.
 - [ ] Style the views.
+- [ ] Remove uneccessary user profile parts.

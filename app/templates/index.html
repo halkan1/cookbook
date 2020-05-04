@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ user.username }}!</h1>
+    <h1>Hi, {{ current_user.username.capitalize() }}!</h1>
     {% for recipe in recipes %}
-    <div><p>{{ recipe.name }} <br> <b>{{ recipe.description }}</b></p></div>
+    <div><p><a href="{{ url_for('recipe', recipe_name=recipe.name) }}">{{ recipe.name }}</a> <br> <b>{{ recipe.description }}</b></p></div>
     {% endfor %}
 {% endblock %}
+

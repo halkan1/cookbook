@@ -40,3 +40,4 @@ crap2
 ### App secret files ###
 .env
 app.db*
+logs/

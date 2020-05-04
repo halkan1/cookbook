@@ -1,16 +1,22 @@
 <html>
     <head>
         {% if title %}
-        <title>{{ title }} - microblog</title>
+        <title>{{ title }} - Cookbook</title>
         {% else %}
-        <title>microblog</title>
+        <title>cookbook</title>
         {% endif %}
     </head>
     <body>
         <div>
-            Microblog:
+            Cookbook:
             <a href="{{ url_for('index') }}">Home</a>
+            {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+            <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+            <a href="{{ url_for('add_recipe') }}">Add Recipe</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}

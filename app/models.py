@@ -1,4 +1,8 @@
-from app import db
+from app import db, login
+from datetime import datetime
+from flask_login import UserMixin
+from hashlib import md5
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Many to Many relationships
 recipe_tags = db.Table('recipe_tags',
@@ -14,12 +18,25 @@ recipe_ingredients = db.Table('recipe_ingredients',
 )
 
 # Database models
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    #recipies = db.relationship('Recipe', backref='author', lazy='dynamic')
+    recipes = db.relationship('Recipe', backref='author', lazy='dynamic')
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def avatar(self, size):
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+            digest, size)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -29,14 +46,15 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     description = db.Column(db.String(128))
+    created_on = db.Column(db.DateTime, default=datetime.utcnow)
     tags = db.relationship('Tag', secondary=recipe_tags, backref=db.backref(
         'recipes', lazy='dynamic'), lazy='dynamic')
-    # timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     servings = db.Column(db.Integer)
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     ingredients = db.relationship('IngredientSet', secondary=recipe_ingredients, 
         backref=db.backref('recipes', lazy='dynamic'), lazy='dynamic')
-    steps = db.relationship('RecipeStep', backref='recipe', lazy='dynamic')
+    steps = db.relationship('RecipeStep', backref='recipe', lazy='dynamic', 
+        order_by='RecipeStep.step_number')
     comments = db.Column(db.String(512))
     source = db.Column(db.String(128))
     
@@ -156,3 +174,7 @@ class IngredientType(db.Model):
 
     def __repr__(self):
         return f'{self.name}'
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
