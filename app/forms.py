@@ -1,10 +1,11 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SubmitField, 
-                     IntegerField, TextAreaField)
+                     IntegerField, TextAreaField, Form, FormField, FieldList,
+                     SelectField)
 from wtforms.validators import (ValidationError, DataRequired, Email, EqualTo, 
                                 Length)
-from app.models import User, Recipe
+from app.models import User, Recipe, MeasurementQty, MeasurementUnit, Ingredient
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -45,18 +46,47 @@ class EditProfileForm(FlaskForm):
             if user is not None:
                 raise ValidationError('Please use a different username.')
 
+class IngredientSetForm(FlaskForm):
+    '''Sub form for RecipeForm'''
+    class Meta:
+        csrf = False
+    quantity = IntegerField('Quantity', render_kw={"placeholder": "quantity"}, 
+        validators=[DataRequired()])
+    unit = StringField('Unit', render_kw={"placeholder": "unit"}, 
+       validators=[DataRequired()])
+    ingredient = StringField('Ingredient', 
+        render_kw={"placeholder": "Ingredient"}, validators=[DataRequired()])
+    # submit = SubmitField('Submit')
+    
+    def validate_quantity(self, quantity):
+        quantity = MeasurementQty.query.filter_by(quantity=self.quantity.data).first()
+        if quantity is None:
+            raise ValidationError('Specified quantity does not exist.')
+
+    def validate_unit(self, unit):
+        unit = MeasurementUnit.query.filter_by(shortform=self.unit.data).first()
+        if unit is None:
+            raise ValidationError('Specified unit does not exist.')
+
+    def validate_ingredient(self, ingredient):
+        ingredient = Ingredient.query.filter_by(name=self.ingredient.data).first()
+        if ingredient is None:
+            raise ValidationError('Specified ingredient does not exist.')
+
+
 class RecipeForm(FlaskForm):
     recipe = StringField('Recipe Name', validators=[DataRequired()])
     description = StringField('Description')
     created_on = datetime.utcnow()
     # tags = 
-    servings = IntegerField('Servings')
+    servings = IntegerField('Servings', validators=[DataRequired()])
+    ingredient = FieldList(FormField(IngredientSetForm), min_entries=1, validators=[DataRequired()])
     comments = TextAreaField('Comments')
     source = StringField('Source/Creator')
     submit = SubmitField('Submit')
 
     def validate_recipe(self, recipe):
-        recipe = Recipe.query.filter_by(name=recipe.data).first()
+        recipe = Recipe.query.filter_by(name=self.recipe.data).first()
         if recipe is not None:
             raise ValidationError('Please use a different recipe name.')
 

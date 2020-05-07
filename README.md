@@ -22,3 +22,4 @@
 - [ ] Improve HTML code.
 - [ ] Style the views.
 - [ ] Remove uneccessary user profile parts.
+- [ ] Fix titles (either static or variable not both)

@@ -3,8 +3,11 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, RecipeForm, EditRecipeForm
-from app.models import User, Recipe
+from app.forms import (LoginForm, RegistrationForm, EditProfileForm, 
+                       RecipeForm, EditRecipeForm, IngredientSetForm)
+from app.models import (User, Recipe, IngredientSet, MeasurementUnit, 
+                        Ingredient, MeasurementQty)
+import sys
 
 @app.route('/')
 @app.route('/index')
@@ -78,13 +81,16 @@ def edit_profile():
 @app.route('/recipe/<recipe_name>')
 @login_required
 def recipe(recipe_name):
-    recipe = Recipe.query.filter_by(name=recipe_name).first()
+    recipe = Recipe.query.filter_by(name=recipe_name).first_or_404()
     return render_template('recipe.html', title=recipe.name, recipe=recipe)
 
 @app.route('/add_recipe', methods=['GET', 'POST'])
 @login_required
 def add_recipe():
     form = RecipeForm()
+    quantities = MeasurementQty.query.all()
+    units = MeasurementUnit.query.all()
+    ingredients = Ingredient.query.all()
     if form.validate_on_submit():
         recipe = Recipe(
             name=form.recipe.data,
@@ -95,10 +101,18 @@ def add_recipe():
             source=form.source.data
         )
         db.session.add(recipe)
+        if form.ingredient.validate(form):
+            for ingredient in form.ingredient.data:
+                query = IngredientSet.get_set(
+                    quantity=ingredient['quantity'], 
+                    unit=ingredient['unit'], 
+                    ingredient=ingredient['ingredient'])
+                recipe.ingredients.append(query)
         db.session.commit()
         flash('Recipe added')
         return redirect(url_for('index'))
-    return render_template('edit_recipe.html', title='Add recipe', form=form)
+    return render_template('add_recipe.html', title='Add recipe', 
+        form=form, quantities=quantities, units=units, ingredients=ingredients)
 
 @app.route('/edit_recipe/<recipe_name>', methods=['GET','POST'])
 @login_required
@@ -121,6 +135,16 @@ def edit_recipe(recipe_name):
         form.comments.data = recipe.comments
         form.source.data = recipe.source
     return render_template('edit_recipe.html', title=f'Edit Recipe - {recipe.name}', form=form)
+
+# Remove this in the future
+@app.route('/ingredient_set', methods=['GET', 'POST'])
+def ingredient_set():
+    form = IngredientSetForm()
+    if form.validate_on_submit():
+        ingredient_set = IngredientSet.get_set(quantity=form.quantity.data, unit=form.unit.data, ingredient=form.ingredient.data)
+        flash(f'Congratulations.')
+        return redirect(url_for('index'))
+    return render_template('ingredient_set.html', title='Ingredient Set', form=form)
 
 @app.before_request
 def before_request():
