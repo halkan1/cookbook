@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container">
 <h1>{{ recipe.name.capitalize() }}</h1>
 <a href="{{ url_for('edit_recipe', recipe_name=recipe.name) }}">Edit Recipe</a>
 <h3>{{ recipe.description }}</h3>
-<h3>{{ recipe.servings }}</h3>
+<h3>Servings: {{ recipe.servings }}</h3>
 <h4>{{ recipe.created_on }}</h4>
 <b>Ingredients</b>
 <ul>
@@ -27,4 +28,5 @@
 {% else %}
 <p>{{ recipe.source }}</p>
 {% endif %}
+</div>
 {% endblock%}

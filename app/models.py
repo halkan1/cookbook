@@ -107,13 +107,21 @@ class IngredientSet(db.Model):
     def add_set(quantity, unit, ingredient):
         ingredient_set = IngredientSet.get_set(quantity, unit, ingredient)
         if ingredient_set is None:
+            # This does not expect the below queries to fail (i.e. if an ingredient does not exist)
             quantity = MeasurementQty.query.filter_by(quantity=quantity).first()
             unit = MeasurementUnit.query.filter_by(shortform=unit).first()
             ingredient = Ingredient.query.filter_by(name=ingredient).first()
-            db.session.add(IngredientSet(
-                quantity=quantity, unit=unit, ingredient=ingredient))
+            if all(q is not None for q in [quantity, unit, ingredient]):
+                db.session.add(IngredientSet(
+                    quantity=quantity, unit=unit, ingredient=ingredient))
+                ingredient_set = IngredientSet.get_set(quantity.quantity, unit.shortform, ingredient.name)
+                return ingredient_set
+            else:
+                return 'something is missing'
             # should move commit to route instead
-            db.session.commit()
+            # db.session.commit()
+        else:
+            return 'Set exists'
 
     @staticmethod
     def remove_set(quantity, unit, ingredient):
@@ -121,7 +129,7 @@ class IngredientSet(db.Model):
         if ingredient_set:
             db.session.delete(ingredient_set)
             # should move commit to route instead
-            db.session.commit()
+            # db.session.commit()
 
     @staticmethod
     def get_set(quantity, unit, ingredient):
@@ -152,6 +160,11 @@ class MeasurementUnit(db.Model):
     fullform = db.Column(db.String(16), unique=True, nullable=False)
     ingredient_set_id = db.relationship(
         'IngredientSet', backref='unit', lazy='dynamic')
+
+    # Add columns for measurement class (fluid, weight, etc) and a converstion
+    # column from base unit (i.e. 1 for ml and g, 10 for cl, 100 for hg etc)
+    # Add methods to convert user inputted quantity base on new column to always
+    # save in lowerst form (i.e. ml, g, etc)
 
     def __repr__(self):
         return f'{self.shortform}'

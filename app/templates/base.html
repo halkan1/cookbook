@@ -55,27 +55,54 @@
 
     <script>
         $(document).ready(function () {
-            var fieldNum = 1;
+            var ingredientNum = 1;
 
             $("#ingredient").on("click", ".ibtnAdd",function(event) { 
-            var newRow = $("<p>");
+            var newRow = $('<div class="row" id="ingredient-row-'+ ingredientNum + '">');
             var cols = "";
 
-            cols += '<input id="ingredient-' + fieldNum + '-quantity" list="quantity_datalist" name="ingredient-' + fieldNum + '-quantity" placeholder="quantity" type="text" value="">';
-            cols += '<input id="ingredient-' + fieldNum + '-unit" list="unit_datalist" name="ingredient-' + fieldNum + '-unit" placeholder="unit" type="text" value="">';
-            cols += '<input id="ingredient-' + fieldNum + '-ingredient" list="ingredient_datalist" name="ingredient-' + fieldNum + '-ingredient" placeholder="ingredient" type="text" value="">';
-            cols += ' <input type="button" id="addIngredient" class="ibtnAdd btn btn-md btn-success btn-sm" value="Add">';
-            cols += ' <input type="button" id="delIngredient" class="ibtnDel btn btn-md btn-danger btn-sm" value="Delete">';
+            cols += '<div class="form-group col-sm-2"><div class="form-group required"><label class="control-label invisible" for="ingredient-' + ingredientNum + '-quantity">Quantity</label><input class="form-control" id="ingredient-' + ingredientNum + '-quantity" list="quantity_datalist" name="ingredient-' + ingredientNum + '-quantity" placeholder="Quantity" required="" type="text" value=""></div></div>';
+            cols += '<div class="form-group col-sm-2"><div class="form-group required"><label class="control-label invisible" for="ingredient-' + ingredientNum + '-unit">Unit</label><input class="form-control" id="ingredient-' + ingredientNum + '-unit" list="unit_datalist" name="ingredient-' + ingredientNum + '-unit" placeholder="Unit" required="" type="text" value=""></div></div>';
+            cols += '<div class="form-group col-sm-2"><div class="form-group required"><label class="control-label invisible" for="ingredient-' + ingredientNum + '-ingredient">Ingredient</label><input class="form-control" id="ingredient-' + ingredientNum + '-ingredient" list="ingredient_datalist" name="ingredient-' + ingredientNum + '-ingredient" placeholder="Ingredient" required="" type="text" value=""></div></div>';
+            cols += '<div class="form-group col-sm-1"><div class="form-group"><label class="control-label invisible">Add</label><input class="form-control ibtnAdd btn btn-md btn-success btn-sm" required="" type="button" value="Add"></div></div>';
+            cols += '<div class="form-group col-sm-1"><div class="form-group"><label class="control-label invisible">Delete</label><input class="form-control ibtnDel btn btn-md btn-danger btn-sm" required="" type="button" value="Delete"></div></div>';
 
             newRow.append(cols);
             $("#ingredient").append(newRow); 
-            fieldNum++; 
+            ingredientNum++; 
             });
         
             $("#ingredient").on("click", ".ibtnDel", function (event) {
-                if (fieldNum > 1) {
-                    $(this).closest("p").remove();       
-                    fieldNum -= 1
+                var $baseRow = document.getElementById("ingredient-row-0");
+                var $deleteElement = $(this).closest('div.row');
+                if ($deleteElement[0].id != $baseRow.id && ingredientNum >= 1) {
+                    $deleteElement.remove();
+                    ingredientNum -= 1
+                }
+            });
+
+            var stepNum = 1;
+
+            $("#step").on("click", ".ibtnStepAdd",function(event) { 
+            var newRow = $('<div class="row" id="step-row-'+ stepNum + '">');
+            var cols = "";
+
+            cols += '<div class="form-group col-sm-1"><div class="form-group  required"><label class="control-label invisible" for="step-' + stepNum + '-step_number">Number</label><input class="form-control" id="step-' + stepNum + '-step_number" name="step-' + stepNum + '-step_number" readonly="" required="" type="text" value="' + (stepNum+1)  + '"></div></div>';
+            cols += '<div class="form-group col-sm-2"><div class="form-group required"><label class="control-label invisible" for="step-' + stepNum + '-step">Step</label><input class="form-control" id="step-' + stepNum + '-step" name="step-' + stepNum + '-step" placeholder="Step" required="" type="text" value=""></div></div>';
+            cols += '<div class="form-group col-sm-1"><div class="form-group"><label class="control-label invisible">Add</label><input class="form-control ibtnStepAdd btn btn-md btn-success btn-sm" required="" type="button" value="Add"></div></div>';
+            cols += '<div class="form-group col-sm-1"><div class="form-group"><label class="control-label invisible">Delete</label><input class="form-control ibtnStepDel btn btn-md btn-danger btn-sm" required="" type="button" value="Delete"></div></div>';
+
+            newRow.append(cols);
+            $("#step").append(newRow); 
+            stepNum++; 
+            });
+        
+            $("#step").on("click", ".ibtnStepDel", function (event) {
+                var $baseRow = document.getElementById("step-row-0");
+                var $deleteElement = $(this).closest('div.row');
+                if ($deleteElement[0].id != $baseRow.id && stepNum >= 1) {
+                    $deleteElement.remove();
+                    stepNum -= 1
                 }
             });
         });

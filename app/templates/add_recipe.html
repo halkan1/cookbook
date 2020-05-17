@@ -1,73 +1,107 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<form action="" method="post">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.recipe.label }}
-        {{ form.recipe(size=32) }}<br>
-        {% for error in form.recipe.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.description.label }}
-        {{ form.description(size=32) }}<br>
-        {% for error in form.description.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
+<datalist id="quantity_datalist">
+    {% for entry in quantities %}
+    <option value="{{ entry }}">
+    {% endfor %}
+</datalist>
+<datalist id="unit_datalist">
+    {% for entry in units %}
+    <option value="{{ entry }}">
+    {% endfor %}
+</datalist>
+<datalist id="ingredient_datalist">
+    {% for entry in ingredients %}
+    <option value="{{ entry }}">
+    {% endfor %}
+</datalist>
 
-    <p>
-        {{ form.servings.label }}
-        {{ form.servings(size=32) }}<br>
-        {% for error in form.servings.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <div id="ingredient">
-        {{ form.ingredient.label }}
-        {% for part in form.ingredient %}
-            <p>{{ part.quantity(list="quantity_datalist") }}{{ part.unit(list="unit_datalist") }}{{ part.ingredient(list="ingredient_datalist") }}
-                <datalist id="quantity_datalist">
-                    {% for entry in quantities %}
-                    <option value="{{ entry }}">
-                    {% endfor %}
-                </datalist>
-                <datalist id="unit_datalist">
-                    {% for entry in units %}
-                    <option value="{{ entry }}">
-                    {% endfor %}
-                </datalist>
-                <datalist id="ingredient_datalist">
-                {% for entry in ingredients %}
-                <option value="{{ entry }}">
-                {% endfor %}
-                </datalist>
-                {% for error in form.ingredient.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            {{ part.hidden_tag() }}
-        {% endfor %}
-        <input type="button" id="addIngredient" class="ibtnAdd btn btn-md btn-success btn-sm"  value="Add">
-        <input type="button" id="delIngredient" class="ibtnDel btn btn-md btn-danger btn-sm"  value="Delete">
-    </p>
+<div class="container">
+    <h2>{{ title }}</h2>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="form-group col-sm-4">
+                {{ wtf.form_field(form.recipe, placeholder="Recipe Name") }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-4">
+                {{ wtf.form_field(form.description, placeholder="Description") }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-4">
+                {{ wtf.form_field(form.servings, placeholder="Servings") }}
+            </div>
+        </div>
+        <div id="ingredient">
+            <div class="row" id="ingredient-row-0">
+                {% for section in form.ingredient -%}
+                <div class="form-group col-sm-2">
+                    {{ wtf.form_field(section.quantity, placeholder="Quantity", list="quantity_datalist") }}
+                </div>
+                <div class="form-group col-sm-2">
+                    {{ wtf.form_field(section.unit, placeholder="Unit", list="unit_datalist") }}
+                </div>
+                <div class="form-group col-sm-2">
+                    {{ wtf.form_field(section.ingredient, placeholder="Ingredient", list="ingredient_datalist") }}
+                </div>
+                {%- endfor %}
+                <div class="form-group col-sm-1">
+                    <div class="form-group">
+                        <label class="control-label invisible">Add</label>
+                        <input class="form-control ibtnAdd btn btn-md btn-success btn-sm" required="" type="button" value="Add">    
+                    </div>
+                </div>
+                <div class="form-group col-sm-1">
+                    <div class="form-group">
+                        <label class="control-label invisible">Delete</label>
+                        <input class="form-control ibtnDel btn btn-md btn-danger btn-sm" required="" type="button" value="Delete">    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step">
+            <div class="row" id="step-row-0">
+                {% for section in form.step -%}
+                <div class="form-group col-sm-1">
+                    {{ wtf.form_field(section.step_number, value="1", readonly=true) }}
+                </div>
+                <div class="form-group col-sm-2">
+                    {{ wtf.form_field(section.step, placeholder="Step") }}
+                </div>
+                {%- endfor %}
+                <div class="form-group col-sm-1">
+                    <div class="form-group">
+                        <label class="control-label invisible">Add</label>
+                        <input id="addStep" class="form-control ibtnStepAdd btn btn-md btn-success btn-sm" required="" type="button" value="Add">    
+                    </div>
+                </div>
+                <div class="form-group col-sm-1">
+                    <div class="form-group">
+                        <label class="control-label invisible">Delete</label>
+                        <input id="deleteStep" class="form-control ibtnStepDel btn btn-md btn-danger btn-sm" required="" type="button" value="Delete">    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-sm-4">
+                {{ wtf.form_field(form.comments, placeholder="Comments") }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-4">
+                {{ wtf.form_field(form.source, placeholder="Source") }}
+            </div>
+        </div>
+        <div>
+            {{ wtf.form_field(form.submit) }}
+        </div>
     </div>
-    <p>
-        {{ form.comments.label }}<br>
-        {{ form.comments(rows='7', cols='78') }}<br>
-        {% for error in form.comments.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.source.label }}
-        {{ form.source(size=64) }}<br>
-        {% for error in form.source.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
 {% endblock %}

@@ -6,7 +6,7 @@ from app import app, db
 from app.forms import (LoginForm, RegistrationForm, EditProfileForm, 
                        RecipeForm, EditRecipeForm, IngredientSetForm)
 from app.models import (User, Recipe, IngredientSet, MeasurementUnit, 
-                        Ingredient, MeasurementQty)
+                        Ingredient, MeasurementQty, RecipeStep)
 import sys
 
 @app.route('/')
@@ -100,14 +100,26 @@ def add_recipe():
             comments=form.comments.data,
             source=form.source.data
         )
+        # Tags 
+        # No implemented yet
+        # Ingredients
         db.session.add(recipe)
         if form.ingredient.validate(form):
             for ingredient in form.ingredient.data:
-                query = IngredientSet.get_set(
+                query = IngredientSet.add_set(
                     quantity=ingredient['quantity'], 
                     unit=ingredient['unit'], 
                     ingredient=ingredient['ingredient'])
-                recipe.ingredients.append(query)
+                if query is not None:
+                    recipe.add_ingredient(query)
+                else:
+                    print('Set does ot exist placeholder')
+        # Steps
+        if form.ingredient.validate(form):
+            for step in form.step.data:
+                step = RecipeStep(step_number=step['step_number'], 
+                    step_text = step['step'])
+                recipe.steps.append(step)
         db.session.commit()
         flash('Recipe added')
         return redirect(url_for('index'))

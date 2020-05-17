@@ -12,14 +12,18 @@
 - [ ] Restructure functions in Forms and Models.
 - [ ] Implement ingredients and steps into recipe form.
 - [ ] Implement ingredient, measurement, quantity, tag, type views.
-- [ ] Investigate support for float values in quantity table.
-- [ ] Implement blueprints (recipes, menues, user could probably be different modules).
-- [ ] Change URLs (/recipe/add, /recipe/edit<recipe>, etc would look better).
+- [ ] Investigate support for float values in quantity table. Date Type could be float, double or decimal
+- [ ] Implement blueprints (recipes, menues, user and weekly menu/shopping list could probably be different modules).
+- [ ] Change URLs (/recipe/add, /recipe/edit/<recipe>, etc would look better).
 - [ ] Build function to accept underscore instead of space but convert it when querying database.
 - [ ] More UnitTesting.
 - [ ] Update Database schema xml to represent the current schema.
+- [ ] Change names for Measurment* tables to Ingredient*
 - [ ] Implement the use of Errors.
 - [ ] Improve HTML code.
 - [ ] Style the views.
 - [ ] Remove uneccessary user profile parts.
 - [ ] Fix titles (either static or variable not both)
+- [ ] Remove Flask-Bootstrap and include as a static asset instead
+- [ ] Instead of relying on existing Ingredient sets allow user to add a new set if it does not exists via a modal
+- [ ] Move add recipe Javascript to the relevant template

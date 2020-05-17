@@ -50,13 +50,9 @@ class IngredientSetForm(FlaskForm):
     '''Sub form for RecipeForm'''
     class Meta:
         csrf = False
-    quantity = IntegerField('Quantity', render_kw={"placeholder": "quantity"}, 
-        validators=[DataRequired()])
-    unit = StringField('Unit', render_kw={"placeholder": "unit"}, 
-       validators=[DataRequired()])
-    ingredient = StringField('Ingredient', 
-        render_kw={"placeholder": "Ingredient"}, validators=[DataRequired()])
-    # submit = SubmitField('Submit')
+    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    unit = StringField('Unit', validators=[DataRequired()])
+    ingredient = StringField('Ingredient', validators=[DataRequired()])
     
     def validate_quantity(self, quantity):
         quantity = MeasurementQty.query.filter_by(quantity=self.quantity.data).first()
@@ -73,6 +69,12 @@ class IngredientSetForm(FlaskForm):
         if ingredient is None:
             raise ValidationError('Specified ingredient does not exist.')
 
+class StepForm(FlaskForm):
+    '''Sub form for RecipeForm'''
+    class Meta:
+        csrf = False
+    step_number = IntegerField('Number', validators=[DataRequired()])
+    step = StringField('Step', validators=[DataRequired()])
 
 class RecipeForm(FlaskForm):
     recipe = StringField('Recipe Name', validators=[DataRequired()])
@@ -81,6 +83,7 @@ class RecipeForm(FlaskForm):
     # tags = 
     servings = IntegerField('Servings', validators=[DataRequired()])
     ingredient = FieldList(FormField(IngredientSetForm), min_entries=1, validators=[DataRequired()])
+    step = FieldList(FormField(StepForm), min_entries=1, validators=[DataRequired()])
     comments = TextAreaField('Comments')
     source = StringField('Source/Creator')
     submit = SubmitField('Submit')
