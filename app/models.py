@@ -114,14 +114,16 @@ class IngredientSet(db.Model):
             if all(q is not None for q in [quantity, unit, ingredient]):
                 db.session.add(IngredientSet(
                     quantity=quantity, unit=unit, ingredient=ingredient))
-                ingredient_set = IngredientSet.get_set(quantity.quantity, unit.shortform, ingredient.name)
+                # Should remove below three rows
+                ingredient_set = IngredientSet.get_set(
+                    quantity.quantity, unit.shortform, ingredient.name)
                 return ingredient_set
             else:
                 return 'something is missing'
             # should move commit to route instead
             # db.session.commit()
         else:
-            return 'Set exists'
+            return ingredient_set
 
     @staticmethod
     def remove_set(quantity, unit, ingredient):
@@ -147,7 +149,7 @@ class IngredientSet(db.Model):
 
 class MeasurementQty(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quantity = db.Column(db.Integer, unique=True, nullable=False)
+    quantity = db.Column(db.Float, unique=True, nullable=False)
     ingredient_set_id = db.relationship(
         'IngredientSet', backref='quantity', lazy='dynamic')
 
@@ -160,7 +162,8 @@ class MeasurementUnit(db.Model):
     fullform = db.Column(db.String(16), unique=True, nullable=False)
     ingredient_set_id = db.relationship(
         'IngredientSet', backref='unit', lazy='dynamic')
-
+    dimension = db.Column(db.String(8), nullable=False)
+    factor = db.Column(db.Float, nullable=False)
     # Add columns for measurement class (fluid, weight, etc) and a converstion
     # column from base unit (i.e. 1 for ml and g, 10 for cl, 100 for hg etc)
     # Add methods to convert user inputted quantity base on new column to always
@@ -174,6 +177,7 @@ class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), unique=True, nullable=False)
     ingredient_type_id = db.Column(db.Integer, db.ForeignKey('ingredient_type.id'))
+    # Add nutritional information
     ingredient_set_id = db.relationship(
         'IngredientSet', backref='ingredient', lazy='dynamic')
 

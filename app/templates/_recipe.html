@@ -1,8 +1,14 @@
-<table>
-  <tr valign="top">
-      <td>
-          <b>{{ recipe.name }}</b><br>
-          {{ recipe.description }}
-      </td>
-  </tr>
-</table>
+  <div class="card mb-4" style="min-width: 15rem; max-width: 15rem;">
+    {% if recipe.image %}
+    <img src="" class="card-img-top" alt=" " style="width: 14rem;">
+    {% else %}
+    <div class="text-center placeholder-image">No image available</div>
+    {% endif %}
+    <div class="card-body">
+      <h5 class="card-title custom-card-text text-capitalize"><a class="text-warning" href="{{ url_for('recipe', recipe_name=recipe.name) }}">{{ recipe.name }}</a></h5>
+      <p class="card-text font-italic">{{ recipe.description }}</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">{{ recipe.created_on }}</small>
+    </div>
+  </div>

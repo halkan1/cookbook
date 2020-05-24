@@ -2,7 +2,7 @@ from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SubmitField, 
                      IntegerField, TextAreaField, Form, FormField, FieldList,
-                     SelectField)
+                     SelectField, FloatField)
 from wtforms.validators import (ValidationError, DataRequired, Email, EqualTo, 
                                 Length)
 from app.models import User, Recipe, MeasurementQty, MeasurementUnit, Ingredient
@@ -50,7 +50,7 @@ class IngredientSetForm(FlaskForm):
     '''Sub form for RecipeForm'''
     class Meta:
         csrf = False
-    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    quantity = FloatField('Quantity', validators=[DataRequired()])
     unit = StringField('Unit', validators=[DataRequired()])
     ingredient = StringField('Ingredient', validators=[DataRequired()])
     
@@ -74,7 +74,7 @@ class StepForm(FlaskForm):
     class Meta:
         csrf = False
     step_number = IntegerField('Number', validators=[DataRequired()])
-    step = StringField('Step', validators=[DataRequired()])
+    step_text = StringField('Step', validators=[DataRequired()])
 
 class RecipeForm(FlaskForm):
     recipe = StringField('Recipe Name', validators=[DataRequired()])
@@ -97,7 +97,9 @@ class EditRecipeForm(FlaskForm):
     recipe = StringField('Recipe Name', validators=[DataRequired()])
     description = StringField('Description')
     # tags = 
-    servings = IntegerField('Servings')
+    servings = IntegerField('Servings', validators=[DataRequired()])
+    ingredient = FieldList(FormField(IngredientSetForm), validators=[DataRequired()])
+    step = FieldList(FormField(StepForm), validators=[DataRequired()])
     comments = TextAreaField('Comments')
     source = StringField('Source/Creator')
     submit = SubmitField('Submit')

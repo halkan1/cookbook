@@ -2,31 +2,58 @@
 
 {% block content %}
 <div class="container">
-<h1>{{ recipe.name.capitalize() }}</h1>
-<a href="{{ url_for('edit_recipe', recipe_name=recipe.name) }}">Edit Recipe</a>
-<h3>{{ recipe.description }}</h3>
-<h3>Servings: {{ recipe.servings }}</h3>
-<h4>{{ recipe.created_on }}</h4>
-<b>Ingredients</b>
-<ul>
-  {% for ingredient in recipe.ingredients %}
-  <li>{{ ingredient }}</li>
-  {% endfor %}
-</ul>
-<b>Steps</b>
-<ol>
-  {% for step in recipe.steps %}
-  <li>{{ step.step_text }}</li>
-  {% endfor %}
-</ol>
-{% if recipe.comments %}
-<b>Comments</b>
-<p>{{ recipe.comments }}</p>
-{% endif %}
-{% if recipe.source.startswith('http') %}
-<a href="{{ recipe.source }}">{{ recipe.source }}</a>
-{% else %}
-<p>{{ recipe.source }}</p>
-{% endif %}
+  <div class="pb-2 mt-4 mb-2 border-bottom">
+    <h1 class="d-inline-block text-capitalize">{{ recipe.name }}</h1>
+    <button type="button" class="btn btn-primary align-text-bottom float-right">
+      <a class="text-white" href="{{ url_for('edit_recipe', recipe_name=recipe.name) }}">Edit Recipe</a>
+    </button>
+    <div class="row mb-2">
+      <div class="col-sm-1">
+        Servings
+      </div>
+      <div class="my-auto">
+        <select class="form-control h-100">
+          {% for number in range(1,17) %}
+          {% if number == recipe.servings %}
+          <option value="{{ number }}" selected>{{ number }}</option>
+          {% else %}
+          <option value="{{ number }}">{{ number }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+</div>
+
+<div>
+  <small class="text-muted">{{ recipe.description }}</small>
+  <h6 class="d-inline-block float-right">{{ recipe.created_on }}</h6>
+</div>
+
+<br>
+<div>
+  <h5>Ingredients</h5>
+</div>
+  <ul>
+    {% for ingredient in recipe.ingredients %}
+    <li class="pl-3">{{ ingredient }}</li>
+    {% endfor %}
+  </ul>
+  <h5>Steps</h5>
+  <ol>
+    {% for step in recipe.steps %}
+    <li class="pl-3">{{ step.step_text }}</li>
+    {% endfor %}
+  </ol>
+  {% if recipe.comments %}
+  <br>
+  <h5>Comments</h5>
+  <p>{{ recipe.comments }}</p>
+  {% endif %}
+  {% if recipe.source.startswith('http') %}
+  <b>Source:</b> <a href="{{ recipe.source }}">{{ recipe.source }}</a>
+  {% else %}
+  <p><b>Source:</b> {{ recipe.source }}</p>
+  {% endif %}
 </div>
 {% endblock%}

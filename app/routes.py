@@ -56,10 +56,7 @@ def register():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    recipes = [
-        {'name': 'Pasta Bolognese', 'description': 'A great dish'},
-        {'name': 'Dumplings', 'description': 'A little work but stunning in the mouth'},
-    ]
+    recipes = Recipe.query.filter_by(author=current_user)
     return render_template('user.html', user=user, recipes=recipes)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -89,9 +86,10 @@ def recipe(recipe_name):
 def add_recipe():
     form = RecipeForm()
     quantities = MeasurementQty.query.all()
-    units = MeasurementUnit.query.all()
-    ingredients = Ingredient.query.all()
+    units = MeasurementUnit.query.order_by(MeasurementUnit.factor).all()
+    ingredients = Ingredient.query.order_by(Ingredient.name).all()
     if form.validate_on_submit():
+        # Could choose to set default author to logged in user if none is supplied
         recipe = Recipe(
             name=form.recipe.data,
             description=form.description.data,
@@ -113,7 +111,7 @@ def add_recipe():
                 if query is not None:
                     recipe.add_ingredient(query)
                 else:
-                    print('Set does ot exist placeholder')
+                    print('Set does not exist placeholder')
         # Steps
         if form.ingredient.validate(form):
             for step in form.step.data:
@@ -131,10 +129,21 @@ def add_recipe():
 def edit_recipe(recipe_name):
     recipe = Recipe.query.filter_by(name=recipe_name).first()
     form = EditRecipeForm(recipe.name)
+    quantities = MeasurementQty.query.all()
+    units = MeasurementUnit.query.order_by(MeasurementUnit.factor).all()
+    ingredients = Ingredient.query.order_by(Ingredient.name).all()
     if form.validate_on_submit():
         recipe.name = form.recipe.data
         recipe.description = form.description.data
         recipe.servings = form.servings.data
+        if form.ingredient.validate(form):
+            for step in recipe.steps.all():
+                    db.session.delete(step)
+                    db.session.commit()
+            for step in form.step.data:
+                step = RecipeStep(step_number=step['step_number'], 
+                    step_text = step['step_text'])
+                recipe.steps.append(step)
         recipe.comments = form.comments.data
         recipe.source = form.source.data
         db.session.commit()
@@ -144,9 +153,14 @@ def edit_recipe(recipe_name):
         form.recipe.data = recipe.name
         form.description.data = recipe.description
         form.servings.data = recipe.servings
+        for ingredient in recipe.ingredients.all():
+            form.ingredient.append_entry(ingredient)
+        for step in recipe.steps.all():
+            form.step.append_entry(step)
         form.comments.data = recipe.comments
         form.source.data = recipe.source
-    return render_template('edit_recipe.html', title=f'Edit Recipe - {recipe.name}', form=form)
+    return render_template('edit_recipe.html', title=f'Edit Recipe - {recipe.name}',
+        form=form, quantities=quantities, units=units, ingredients=ingredients)
 
 # Remove this in the future
 @app.route('/ingredient_set', methods=['GET', 'POST'])

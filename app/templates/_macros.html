@@ -1,0 +1,45 @@
+{% macro render_field(field) %}
+<div class="form-group">
+  {{ field.label(class="font-weight-bold") }}
+  {{ field(class="form-control col-sm-4", **kwargs)|safe }}
+  <ul>
+    {% for error in field.errors %}
+    <li style="color: red;">[{{ error }}]</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro %}
+
+{% macro ingredient_field(field, label=True) %}
+<div class="form-group col-sm-2">
+  {% if label == True %}
+  {{ field.label(class="font-weight-bold") }}
+  {% endif %}
+  {{ field(class="form-control", **kwargs)|safe }}
+  <ul>
+    {% for error in field.errors %}
+    <li style="color: red;">[{{ error }}]</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro %}
+
+{% macro step_field(field, div_style, label=True) %}
+<div class="form-group {{ div_style }}">
+  {% if label == True %}
+  {{ field.label(class="font-weight-bold") }}
+  {% endif %}
+  {{ field(class="form-control", **kwargs)|safe }}
+</div>
+{% endmacro %}
+
+{% macro form_button(button_type, button_style, event_class, label=True) %}
+<div class="form-group col-sm-1">
+  <div class="form-group">
+      {% if label == True %}
+      <label class="control-label invisible">{{ button_type }}</label>
+      {% endif %}
+      <input class="form-control {{ event_class }} btn btn-md {{ button_style }} btn-sm" required="" type="button" value="{{ button_type }}">    
+  </div>
+</div>
+{% endmacro %}

@@ -9,6 +9,7 @@
 ## ToDos
 
 - [ ] Clean up current code.
+- [ ] Fix Edit Recipe
 - [ ] Restructure functions in Forms and Models.
 - [ ] Implement ingredients and steps into recipe form.
 - [ ] Implement ingredient, measurement, quantity, tag, type views.
@@ -27,3 +28,8 @@
 - [ ] Remove Flask-Bootstrap and include as a static asset instead
 - [ ] Instead of relying on existing Ingredient sets allow user to add a new set if it does not exists via a modal
 - [ ] Move add recipe Javascript to the relevant template
+- [ ] Improve layout of index with cards for each recipe shown and pagination
+- [ ] Improve Add and Delete for Ingredients and Steps in forms
+- [ ] Create a seperate view or Droplist from navbar to add smaller things like ingredients and units...
+- [ ] Allow access to index and individual recipes without being logged in.
+- [ ] Make login a dropdown from the user icon at the top right instead.

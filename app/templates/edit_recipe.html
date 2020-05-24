@@ -1,73 +1,70 @@
 {% extends "base.html" %}
+{% from "_macros.html" import render_field, ingredient_field, form_button, step_field %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<form action="" method="post">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.recipe.label }}
-        {{ form.recipe(size=32) }}<br>
-        {% for error in form.recipe.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.description.label }}
-        {{ form.description(size=32) }}<br>
-        {% for error in form.description.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
+<datalist id="quantity_datalist">
+    {% for entry in quantities %}
+    <option value="{{ entry }}">
+    {% endfor %}
+</datalist>
+<datalist id="unit_datalist">
+    {% for entry in units %}
+    <option value="{{ entry }}">
+    {% endfor %}
+</datalist>
+<datalist id="ingredient_datalist">
+    {% for entry in ingredients %}
+    <option value="{{ entry }}">
+    {% endfor %}
+</datalist>
 
-    <p>
-        {{ form.servings.label }}
-        {{ form.servings(size=32) }}<br>
-        {% for error in form.servings.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <div id="ingredient">
-        {{ form.ingredient.label }}
-        {% for part in form.ingredient %}
-            <p>{{ part.quantity(list="quantity_datalist") }}{{ part.unit(list="unit_datalist") }}{{ part.ingredient(list="ingredient_datalist") }}
-                <datalist id="quantity_datalist">
-                    {% for entry in quantities %}
-                    <option value="{{ entry }}">
-                    {% endfor %}
-                </datalist>
-                <datalist id="unit_datalist">
-                    {% for entry in units %}
-                    <option value="{{ entry }}">
-                    {% endfor %}
-                </datalist>
-                <datalist id="ingredient_datalist">
-                {% for entry in ingredients %}
-                <option value="{{ entry }}">
-                {% endfor %}
-                </datalist>
-                {% for error in form.ingredient.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            {{ part.hidden_tag() }}
-        {% endfor %}
-        <input type="button" id="addIngredient" class="ibtnAdd btn btn-md btn-success btn-sm"  value="Add">
-        <input type="button" id="delIngredient" class="ibtnDel btn btn-md btn-danger btn-sm"  value="Delete">
-    </p>
-    </div>
-    <p>
-        {{ form.comments.label }}<br>
-        {{ form.comments(rows='7', cols='78') }}<br>
-        {% for error in form.comments.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.source.label }}
-        {{ form.source(size=64) }}<br>
-        {% for error in form.source.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+<div class="container">
+    <h2 class="text-capitalize">{{ title }}</h2>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.recipe, placeholder="Recipe Name") }}
+        {{ render_field(form.description, placeholder="Description") }}
+        {{ render_field(form.servings, placeholder="Servings") }}
+        <div id="ingredient">
+          {% for section in form.ingredient %}
+          {% set loop_nr = loop.index - 1 %}
+          <div class="form-row" id="ingredient-row-{{ loop_nr }}">
+            {% if loop.first %}
+            {{ ingredient_field(section.quantity, placeholder="Quantity", list="quantity_datalist") }}
+            {{ ingredient_field(section.unit, placeholder="Unit", list="unit_datalist") }}
+            {{ ingredient_field(section.ingredient, placeholder="Ingredient", list="ingredient_datalist") }}
+            {{ form_button("Add", "btn-success", "ibtnIngredientAdd") }}
+            {{ form_button("Delete", "btn-danger", "ibtnIngredientDelete") }}
+            {% else %}
+            {{ ingredient_field(section.quantity, label=False, placeholder="Quantity", list="quantity_datalist") }}
+            {{ ingredient_field(section.unit, label=False, placeholder="Unit", list="unit_datalist") }}
+            {{ ingredient_field(section.ingredient, label=False, placeholder="Ingredient", list="ingredient_datalist") }}
+            {{ form_button("Add", "btn-success", "ibtnIngredientAdd", label=False) }}
+            {{ form_button("Delete", "btn-danger", "ibtnIngredientDelete", label=False) }}
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div id="step">
+          {% for section in form.step %}
+          {% set loop_nr = loop.index - 1 %}
+          <div class="form-row" id="step-row-{{ loop_nr }}">
+            {% if loop.first %}
+            {{ step_field(section.step_number, div_style="col-sm-1", readonly=true) }}
+            {{ step_field(section.step_text, div_style="col-sm-5", placeholder="Step") }}
+            {{ form_button("Add", "btn-success", "ibtnStepAdd") }}
+            {{ form_button("Delete", "btn-danger", "ibtnStepDelete") }}
+            {% else %}
+            {{ step_field(section.step_number, label=False, div_style="col-sm-1", readonly=true) }}
+            {{ step_field(section.step_text, label=False, div_style="col-sm-5", placeholder="Step") }}
+            {{ form_button("Add", "btn-success", "ibtnStepAdd", label=False) }}
+            {{ form_button("Delete", "btn-danger", "ibtnStepDelete", label=False) }}
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {{ render_field(form.comments, placeholder="Comments") }}
+        {{ render_field(form.source, placeholder="Source") }}
+        {{ form.submit(class="btn btn-success") }}
+    </form>
 {% endblock %}
